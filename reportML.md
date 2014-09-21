@@ -53,13 +53,6 @@ In 522 number of cases in the validation set, there was disagreement between mod
 
 
 
-```r
-library(stats)
-
-conf_mat<- confusionMatrix(mat_ind[mn_exp],AllData_PC_cv[,len_data])
-print(conf_mat)
-```
-
 ```
 ## Confusion Matrix and Statistics
 ## 

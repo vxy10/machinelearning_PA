@@ -2,9 +2,10 @@
 title: "Classification of quality of barbell lifts based on wearable sensor data"
 author: "Vivek Yadav"
 date: "Saturday, September 20, 2014"
-output: 
+output:
   html_document:
     keep_md: yes
+  pdf_document: default
 ---
 ### Synopsis
 
@@ -45,7 +46,7 @@ data_test2 <- as.data.frame(data_test[,ind_na==FALSE])
 ```{r, echo=FALSE,message =FALSE,cache=TRUE}
 
 features<-names(data_train2)
-roll_ind<-grep("_roll_",features,fixed = TRUE)
+roll_ind<-grep("_roll_",features,fixed = TRUE) 
 pitch_ind<-grep("_pitch_",features,fixed = TRUE)
 picth_ind<-grep("_picth_",features,fixed = TRUE)
 yaw_ind<-grep("_yaw_",features,fixed = TRUE)
@@ -93,10 +94,10 @@ predictors_PC<- predict(preProc,data_training[predictors])
 AllData_PC <- cbind(predictors_PC,classe = data_training[,dim(data_training)[2]])
 
 sd_pc= vector()
-for (i in 1:30) {sd_pc[i] = sum(pc_all$sdev[1:i])/sum(pc_all$sdev)}
+for (i in 1:30) {sd_pc[i] = sum(pc_all$sdev[1:i])/sum(pc_all$sdev)} 
 plot(sd_pc,type="l",
      xlab="number of PCs",
-     ylab="Covariance explained by PCs")
+     ylab="Covariance explained by PCs") 
  
 ```
 
@@ -108,7 +109,7 @@ Figure 1. Covarince explained by each variable. Cut off used here was 99% which 
   par(mfrow=c(1,2))
   plot(predictors_PC$PC1,predictors_PC$PC2,col=data_training$classe,
        xlab ="PC1",ylab="PC2")
-  plot(predictors_PC$PC3,predictors_PC$PC4,col=data_training$classe,
+  plot(predictors_PC$PC3,predictors_PC$PC4,col=data_training$classe, 
        xlab ="PC3",ylab="PC4")
 ```
 
@@ -128,7 +129,7 @@ AllData_PC_cv   <- cbind(predictors_PC_cv,classe = data_CV[,dim(data_training)[2
 
 inTrain <- createDataPartition(y=AllData_PC$classe, p = .5,list = FALSE)
 num_train = length(inTrain)
-trainData<- AllData_PC[inTrain,]
+trainData<- AllData_PC[inTrain,] 
 testData <- AllData_PC[-inTrain,]
 
 len_data<- dim(AllData_PC)[2]
@@ -144,7 +145,7 @@ pred_rpart <- predict(rpart_model, testData[,-len_data],type = "class")
 #confusionMatrix(pred_rpart,testData[,"classe"])
 
 tree_model <- tree(classe ~ ., data = trainData)
-pred_tree <- predict(tree_model, testData[,-len_data],type = "class")
+pred_tree <- predict(tree_model, testData[,-len_data],type = "class") 
 #confusionMatrix(pred_tree,testData[,"classe"])
 
 ```
@@ -164,7 +165,7 @@ for (j in 1:num_fits) {
   testData <- AllData_PC[-inTrain,]
   
   svm_model <- svm(classe ~ ., data = trainData)
-  pred_svm <- predict(svm_model, testData[,-dim(testData)[2]])
+  pred_svm <- predict(svm_model, testData[,-dim(testData)[2]]) 
   ConfMat_all[[j]]=confusionMatrix(pred_svm,testData[,"classe"])
   SvmFit_all[[j]] <-svm_model
 }
@@ -184,14 +185,14 @@ for (j in 1:5) {
   mat_cons[,j] <- apply(a, 1, sum)  
 }
 mn_exp <- (apply(mat_cons, 1,which.max))
-mat_cons_all<-apply(mat_cons,1,max)/41
+mat_cons_all<-apply(mat_cons,1,max)/41 
 
 hist(mat_cons_all[mat_cons_all!=1],col="blue",
      xlab = "% of models agreeing on one value",
      ylab = "Frequenchy",
      main = "")
  
-num_cons<-length(mat_cons_all) 
+num_cons<-length(mat_cons_all)  
 num_conf<-length(mat_cons_all[mat_cons_all!=1])
 
 ```
@@ -201,8 +202,7 @@ Figure 3. Histogram of % of models that agreed on one prediction.
 In `r num_cons` number of cases in the validation set, there was disagreement between models in `r num_conf` cases. This was resolved using consensus between the models. Overall, the confusion matrix is reported below. This resulted in expected accuracy > 98%. 
 
 
-```{r cache=TRUE}
-library(stats)
+```{r cache=TRUE,echo=FALSE}
 
 conf_mat<- confusionMatrix(mat_ind[mn_exp],AllData_PC_cv[,len_data])
 print(conf_mat)
